@@ -1,0 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+.env
+.venv/
+env/
+venv/
+ENV/
+
+# Podman / Docker
+*.tar
+*.tar.gz
+*.tar.zst
+.podman/
+.docker/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Editors
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Kubernetes development
+kubeconfig.local
+*.kubeconfig
+.kube/cache/
+helm-values.local.yaml
+*.local.yaml
+*.local.yml
+secrets/
+*.secret.yaml
+*.secret.yml
+
+# Logs and temp files
+*.log
+tmp/
+temp/
