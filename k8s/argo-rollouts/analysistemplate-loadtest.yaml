@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: grpc-load-generator
+  namespace: app-demo
+spec:
+  metrics:
+  - name: generate-traffic
+    count: 1
+    provider:
+      job:
+        spec:
+          backoffLimit: 0
+          template:
+            metadata:
+              annotations:
+                linkerd.io/inject: disabled
+            spec:
+              restartPolicy: Never
+              containers:
+              - name: load-test
+                image: localhost/user-api-load-test:latest
+                imagePullPolicy: IfNotPresent
+                env:
+                - name: API_BASE_URL  
+                  value: "http://user-api.app-demo.svc.cluster.local:8080"
+                - name: REQUESTS
+                  value: "100"
+                - name: USER_NAME
+                  value: "test"
+                - name: THEME
+                  value: "dark"
+                - name: QUIET
+                  value: "true"

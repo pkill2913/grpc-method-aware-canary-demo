@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: user-service-success-rate
+  namespace: app-demo
+spec:
+  args:
+  - name: canary-hash
+
+  metrics:
+  - name: success-rate
+    interval: 30s
+    count: 1
+    successCondition: result[0] >= 0.99
+    failureLimit: 1
+
+    provider:
+      prometheus:
+        address: http://prometheus.linkerd-viz.svc.cluster.local:9090
+
+        query: |
+          sum(
+            rate(
+              response_total{
+                namespace="app-demo",
+                target_port="50051",
+                rollouts_pod_template_hash="{{args.canary-hash}}",
+                grpc_status="0"
+              }[1m]
+            )
+          )
+          /
+          sum(
+            rate(
+              response_total{
+                namespace="app-demo",
+                target_port="50051",
+                rollouts_pod_template_hash="{{args.canary-hash}}"
+              }[1m]
+            )
+          )

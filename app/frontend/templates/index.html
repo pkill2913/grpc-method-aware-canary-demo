@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>user-card-demo</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Kubernetes routing demo</p>
+          <h1>user-card-demo</h1>
+        </div>
+        <div class="route-map" aria-label="Service path">
+          <span>frontend</span>
+          <span>HTTP</span>
+          <span>user-api</span>
+          <span>gRPC</span>
+          <span>user-service</span>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="control-panel" aria-label="Controls">
+          <div class="field-row">
+            <label for="nameInput">User name</label>
+            <input id="nameInput" name="name" type="text" value="demo-user" autocomplete="off">
+          </div>
+          <div class="field-row">
+            <label>Theme</label>
+            <div class="theme-picker" role="radiogroup" aria-label="Theme">
+              <button type="button" class="theme-swatch is-selected" data-theme="blue" aria-label="Blue" aria-checked="true" role="radio"></button>
+              <button type="button" class="theme-swatch" data-theme="purple" aria-label="Purple" aria-checked="false" role="radio"></button>
+              <button type="button" class="theme-swatch" data-theme="green" aria-label="Green" aria-checked="false" role="radio"></button>
+              <button type="button" class="theme-swatch" data-theme="amber" aria-label="Amber" aria-checked="false" role="radio"></button>
+              <button type="button" class="theme-swatch" data-theme="red" aria-label="Red" aria-checked="false" role="radio"></button>
+            </div>
+          </div>
+          <div class="actions">
+            <button id="getButton" type="button">GET /api/user</button>
+            <button id="postButton" type="button" class="secondary">POST /api/user</button>
+            <button id="listButton" type="button" class="secondary">GET /api/users</button>
+          </div>
+          <div class="saved-users-panel">
+            <h2>Saved users</h2>
+            <div id="savedUsers" class="saved-users" aria-live="polite"></div>
+          </div>
+          <p id="requestStatus" class="request-status" role="status">Ready</p>
+        </section>
+
+        <section id="userCard" class="user-card" aria-label="User card">
+          <div class="card-accent"></div>
+          <div class="avatar-wrap">
+            <div id="avatar" class="avatar" aria-hidden="true">&#128100;</div>
+            <div>
+              <p id="method" class="method-pill">GetUser</p>
+              <h2 id="userName">demo-user</h2>
+            </div>
+          </div>
+
+          <div class="status-row">
+            <div>
+              <span class="meta-label">Status</span>
+              <strong id="status">active</strong>
+            </div>
+            <div>
+              <span class="meta-label">Theme</span>
+              <strong id="theme">blue</strong>
+            </div>
+            <div>
+              <span class="meta-label">User service</span>
+              <strong id="userVersion">v1</strong>
+            </div>
+          </div>
+
+          <blockquote id="message">Hello demo-user with blue theme from v1</blockquote>
+        </section>
+
+        <section class="service-panel" aria-label="Service versions">
+          <h2>Service versions</h2>
+          <dl>
+            <div>
+              <dt>avatar-service</dt>
+              <dd id="avatarVersion">v1</dd>
+            </div>
+            <div>
+              <dt>user-service</dt>
+              <dd id="detailUserVersion">v1</dd>
+            </div>
+          </dl>
+          <div id="pointsPanel" class="points-panel" hidden>
+            <span class="meta-label">Points</span>
+            <strong id="pointsValue">0</strong>
+          </div>
+        </section>
+
+        <section class="response-panel" aria-label="Last response">
+          <h2>Last response</h2>
+          <pre id="rawResponse">{}</pre>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

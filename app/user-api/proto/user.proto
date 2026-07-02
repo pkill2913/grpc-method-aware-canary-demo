@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package usercard;
+
+service UserService {
+  rpc GetUser (UserRequest) returns (UserResponse);
+  rpc CreateUser (UserRequest) returns (UserResponse);
+  rpc ListUsers (ListUsersRequest) returns (ListUsersResponse);
+}
+
+message ListUsersRequest {}
+
+message ListUsersResponse {
+  repeated UserResponse users = 1;
+}
+
+message UserRequest {
+  string name = 1;
+  string theme = 2;
+}
+
+message UserResponse {
+  string method = 1;
+  string name = 2;
+  string status = 3;
+  string version = 4;
+  string message = 5;
+  string theme = 6;
+  int32 points = 7;
+}

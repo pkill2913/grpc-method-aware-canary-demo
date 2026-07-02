@@ -1,0 +1,36 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: GRPCRoute
+metadata:
+  name: userservice-route
+  namespace: app-demo
+spec:
+  parentRefs:
+  - group: ""
+    kind: Service
+    name: user-service
+    port: 50051
+  rules:
+  - matches:
+    - method:
+        service: usercard.UserService
+        method: GetUser
+    backendRefs:
+    - name: user-service-stable
+      port: 50051
+      weight: 10
+    - name: user-service-canary
+      port: 50051
+      weight: 90     
+  - matches:
+    - method:
+        service: usercard.UserService
+        method: CreateUser
+    backendRefs:
+    - name: user-service-stable
+      port: 50051
+      weight: 100
+  # DEFAULT
+  - backendRefs:
+    - name: user-service-stable
+      port: 50051
+      weight: 100

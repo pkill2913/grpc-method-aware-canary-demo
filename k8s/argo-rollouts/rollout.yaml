@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: user-service
+  namespace: app-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+      - name: user-service
+        image: localhost/user-service:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: APP_VERSION
+          value: v1
+        ports:
+        - name: grpc
+          containerPort: 50051
+  strategy:
+    canary:
+      stableService: user-service-stable
+      canaryService: user-service-canary
+      steps:
+      - setWeight: 50      
+      - pause:
+          duration: 5s
+      - analysis:
+          templates:
+          - templateName: grpc-load-generator
+      - pause:
+          duration: 5s
+      - analysis:
+          templates:
+          - templateName: user-service-success-rate
+          args:
+          - name: canary-hash
+            valueFrom:
+              podTemplateHashValue: Latest
+      - pause: {} 
