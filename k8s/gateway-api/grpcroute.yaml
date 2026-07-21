@@ -17,10 +17,10 @@ spec:
     backendRefs:
     - name: user-service-stable
       port: 50051
-      weight: 10
+      weight: 90
     - name: user-service-canary
       port: 50051
-      weight: 90     
+      weight: 10     
   - matches:
     - method:
         service: usercard.UserService
