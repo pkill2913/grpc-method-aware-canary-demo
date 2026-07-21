@@ -174,19 +174,17 @@ class UserService(user_pb2_grpc.UserServiceServicer):
 
     def CreateUser(self, request, context):
         started = time.perf_counter()
-        storage_version = require_supported_version(context)
+        version = require_supported_version(context)
         name = request.name or DEFAULT_USER_NAME
         theme = normalize_theme(request.theme)
-        response_version = "v1"
-        record, created = save_user_record(name, theme, storage_version)
+        record, created = save_user_record(name, theme, version)
         status = "created" if created else "updated"
         elapsed_ms = (time.perf_counter() - started) * 1000
         logging.info(
-            "grpc method=CreateUser name=%s theme=%s storage_version=%s response_version=%s status=%s store_path=%s elapsed_ms=%.2f",
+            "grpc method=CreateUser name=%s theme=%s version=%s status=%s store_path=%s elapsed_ms=%.2f",
             name,
             theme,
-            storage_version,
-            response_version,
+            version,
             status,
             USER_STORE_PATH,
             elapsed_ms,
@@ -195,8 +193,8 @@ class UserService(user_pb2_grpc.UserServiceServicer):
             method="CreateUser",
             name=name,
             status=status,
-            version=response_version,
-            message=f"{status.title()} {record['name']} with {record['theme']} theme in local store from {response_version}",
+            version=version,
+            message=f"{status.title()} {record['name']} with {record['theme']} theme in local store from {version}",
             theme=record["theme"],
         )
 
