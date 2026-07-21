@@ -136,10 +136,7 @@ spec:
     backendRefs:
     - name: user-service-v1
       port: 50051
-      weight: 50
-    - name: user-service-v2
-      port: 50051
-      weight: 50
+      weight: 100
   # DEFAULT
   - backendRefs:
     - name: user-service-v1
