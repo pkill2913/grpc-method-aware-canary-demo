@@ -113,18 +113,35 @@ metadata:
   namespace: app-demo
 spec:
   parentRefs:
-    - name: user-service
-      namespace: app-demo
-      kind: Service
-      group: ""
-      port: 50051
+  - group: ""
+    kind: Service
+    name: user-service
+    port: 50051
   rules:
-    - backendRefs:
-        - name: user-service-v1
-          namespace: app-demo
-          port: 50051
-          weight: 50
-        - name: user-service-v2
-          namespace: app-demo
-          port: 50051
-          weight: 50
+  - matches:
+    - method:
+        service: usercard.UserService
+        method: GetUser
+    backendRefs:
+    - name: user-service-v1
+      port: 50051
+      weight: 50
+    - name: user-service-v2
+      port: 50051
+      weight: 50
+  - matches:
+    - method:
+        service: usercard.UserService
+        method: CreateUser
+    backendRefs:
+    - name: user-service-v1
+      port: 50051
+      weight: 50
+    - name: user-service-v2
+      port: 50051
+      weight: 50
+  # DEFAULT
+  - backendRefs:
+    - name: user-service-v1
+      port: 50051
+      weight: 100
