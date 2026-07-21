@@ -1,5 +1,4 @@
 const state = {
-  avatar: "\u{1F464}",
   theme: "blue",
   method: "GetUser",
   name: "demo-user",
@@ -8,7 +7,6 @@ const state = {
   message: "Hello demo-user with blue theme from v1",
   points: null,
   versions: {
-    avatarService: "v1",
     userService: "v1",
   },
 };
@@ -30,14 +28,12 @@ const elements = {
   requestStatus: document.querySelector("#requestStatus"),
   savedUsers: document.querySelector("#savedUsers"),
   userCard: document.querySelector("#userCard"),
-  avatar: document.querySelector("#avatar"),
   method: document.querySelector("#method"),
   userName: document.querySelector("#userName"),
   status: document.querySelector("#status"),
   theme: document.querySelector("#theme"),
   userVersion: document.querySelector("#userVersion"),
   message: document.querySelector("#message"),
-  avatarVersion: document.querySelector("#avatarVersion"),
   detailUserVersion: document.querySelector("#detailUserVersion"),
   pointsPanel: document.querySelector("#pointsPanel"),
   pointsValue: document.querySelector("#pointsValue"),
@@ -67,14 +63,12 @@ function render(data = state) {
     swatch.classList.toggle("is-selected", isSelected);
     swatch.setAttribute("aria-checked", String(isSelected));
   });
-  elements.avatar.textContent = data.avatar || "\u{1F464}";
   elements.method.textContent = data.method || "GetUser";
   elements.userName.textContent = data.name || "demo-user";
   elements.status.textContent = data.status || "unknown";
   elements.theme.textContent = themeName;
   elements.userVersion.textContent = data.userServiceVersion || data.versions.userService || "unknown";
   elements.message.textContent = data.message || "";
-  elements.avatarVersion.textContent = data.versions.avatarService || "unknown";
   elements.detailUserVersion.textContent = data.versions.userService || "unknown";
 
   const hasPoints = Number.isInteger(data.points);

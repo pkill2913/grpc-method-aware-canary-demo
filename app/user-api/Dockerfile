@@ -11,7 +11,6 @@ RUN python -m grpc_tools.protoc -I proto --python_out=. --grpc_python_out=. prot
 COPY . .
 
 ENV PORT=8080
-ENV AVATAR_SERVICE_URL=http://avatar-service:8080
 ENV USER_SERVICE_HOST=user-service:50051
 ENV DEFAULT_USER_NAME=demo-user
 ENV DEFAULT_THEME=blue

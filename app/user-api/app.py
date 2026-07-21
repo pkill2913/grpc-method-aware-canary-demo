@@ -3,7 +3,6 @@ import os
 import sys
 
 import grpc
-import requests
 from flask import Flask, jsonify, request
 
 import user_pb2
@@ -26,7 +25,6 @@ logger = logging.getLogger("user-api")
 
 app = Flask(__name__)
 
-AVATAR_SERVICE_URL = os.getenv("AVATAR_SERVICE_URL", "http://avatar-service:8080").rstrip("/")
 USER_SERVICE_HOST = os.getenv("USER_SERVICE_HOST", "user-service:50051")
 DEFAULT_USER_NAME = os.getenv("DEFAULT_USER_NAME", "demo-user")
 DEFAULT_THEME = os.getenv("DEFAULT_THEME", "blue")
@@ -43,38 +41,19 @@ def get_user():
     name = request.args.get("name") or DEFAULT_USER_NAME
     selected_theme = request.args.get("theme") or DEFAULT_THEME
     logger.info(
-        "GET /api/user name=%s theme=%s avatar_url=%s grpc_host=%s",
+        "GET /api/user name=%s theme=%s grpc_host=%s",
         name,
         selected_theme,
-        AVATAR_SERVICE_URL,
         USER_SERVICE_HOST,
     )
 
     try:
-        avatar = fetch_json(AVATAR_SERVICE_URL, "/avatar")
         user = call_user_service("GetUser", name, selected_theme)
-    except requests.RequestException as exc:
-        logger.error(
-            "avatar-service HTTP request failed url=%s/avatar timeout=%ss error=%s",
-            AVATAR_SERVICE_URL,
-            REQUEST_TIMEOUT,
-            exc,
-            exc_info=True,
-        )
-        return jsonify({"error": "internal HTTP service request failed", "detail": str(exc)}), 502
-    except ValueError as exc:
-        logger.error(
-            "avatar-service returned invalid JSON url=%s/avatar error=%s",
-            AVATAR_SERVICE_URL,
-            exc,
-            exc_info=True,
-        )
-        return jsonify({"error": "internal HTTP service returned invalid JSON", "detail": str(exc)}), 502
     except (grpc.RpcError, grpc.FutureTimeoutError) as exc:
         return grpc_error_response(exc, method="GetUser", name=name, theme=selected_theme)
 
     logger.info("GET /api/user succeeded name=%s theme=%s", name, selected_theme)
-    return jsonify(build_user_payload(user, avatar=avatar))
+    return jsonify(build_user_payload(user))
 
 
 @app.post("/api/user")
@@ -115,20 +94,6 @@ def list_users():
             },
         }
     )
-
-
-def fetch_json(base_url, path):
-    url = f"{base_url}{path}"
-    logger.info("HTTP GET %s timeout=%ss", url, REQUEST_TIMEOUT)
-    response = requests.get(url, timeout=REQUEST_TIMEOUT)
-    logger.info(
-        "HTTP GET %s status=%s elapsed=%.3fs",
-        url,
-        response.status_code,
-        response.elapsed.total_seconds(),
-    )
-    response.raise_for_status()
-    return response.json()
 
 
 def call_user_service(method_name, name, theme=None):
@@ -187,7 +152,7 @@ def grpc_response_to_dict(response):
     return payload
 
 
-def build_user_payload(user, avatar=None):
+def build_user_payload(user):
     payload = {
         "method": user["method"],
         "name": user["name"],
@@ -201,10 +166,6 @@ def build_user_payload(user, avatar=None):
     }
     if "points" in user:
         payload["points"] = user["points"]
-
-    if avatar:
-        payload["avatar"] = avatar.get("avatar")
-        payload["versions"]["avatarService"] = avatar.get("version")
 
     return payload
 
@@ -252,9 +213,8 @@ def grpc_error_response(exc, method=None, name=None, theme=None):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "8080"))
     logger.info(
-        "starting user-api port=%s avatar_url=%s grpc_host=%s timeout=%ss log_level=%s",
+        "starting user-api port=%s grpc_host=%s timeout=%ss log_level=%s",
         port,
-        AVATAR_SERVICE_URL,
         USER_SERVICE_HOST,
         REQUEST_TIMEOUT,
         os.getenv("LOG_LEVEL", "INFO"),

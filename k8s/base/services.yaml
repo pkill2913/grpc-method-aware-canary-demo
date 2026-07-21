@@ -26,19 +26,3 @@ spec:
     - name: http
       port: 8080
       targetPort: http
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: avatar-service
-  namespace: app-demo
-  labels:
-    app.kubernetes.io/name: avatar-service
-spec:
-  type: ClusterIP
-  selector:
-    app.kubernetes.io/name: avatar-service
-  ports:
-    - name: http
-      port: 8080
-      targetPort: http

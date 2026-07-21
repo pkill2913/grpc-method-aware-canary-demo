@@ -10,7 +10,6 @@ This repository shows how to route gRPC traffic by method during a progressive d
 Browser
   └── frontend (HTTP)
         └── user-api (HTTP → gRPC)
-              ├── avatar-service (HTTP)
               └── user-service (gRPC)
                     ├── stable (v1)
                     └── canary (v2)
@@ -20,7 +19,6 @@ Browser
 |-----------|------|
 | **frontend** | Web UI that calls `user-api` over HTTP |
 | **user-api** | HTTP API that proxies requests to `user-service` over gRPC |
-| **avatar-service** | Returns avatar metadata for `GetUser` responses |
 | **user-service** | gRPC service exposing `GetUser`, `CreateUser`, and `ListUsers` |
 | **Linkerd** | Service mesh; provides mTLS and Prometheus metrics used during analysis |
 | **Gateway API** | Routes HTTP traffic to the frontend and gRPC traffic by method via `GRPCRoute` |
@@ -33,7 +31,6 @@ During the demo, `GRPCRoute` sends most `GetUser` traffic to the canary and keep
 ```
 .
 ├── app/
-│   ├── avatar-service/      # Avatar HTTP service
 │   ├── frontend/            # Demo web UI
 │   ├── user-api/            # HTTP API and gRPC client
 │   ├── user-api-load-test/  # Load test used by Argo Rollouts analysis
@@ -64,7 +61,6 @@ Install the platform components using their official documentation before deploy
 From the repository root:
 
 ```bash
-podman build -t localhost/avatar-service:latest ./app/avatar-service
 podman build -t localhost/frontend:latest ./app/frontend
 podman build -t localhost/user-api:latest ./app/user-api
 podman build -t localhost/user-service:latest ./app/user-service
@@ -76,7 +72,7 @@ If you use k3d, import the images into your cluster:
 ```bash
 CLUSTER=<your-k3d-cluster-name>
 
-for image in avatar-service frontend user-api user-service user-api-load-test; do
+for image in frontend user-api user-service user-api-load-test; do
   podman save localhost/${image}:latest -o /tmp/${image}.tar
   k3d image import /tmp/${image}.tar -c "${CLUSTER}"
 done
