@@ -12,7 +12,10 @@ spec:
     interval: 30s
     count: 1
     successCondition: result[0] >= 0.99
-    failureLimit: 1
+    # 0 => any failed measurement fails the AnalysisRun (and aborts the canary step).
+    # With failureLimit: 1 and count: 1, a single failed sample is still allowed and the
+    # run can report Successful — which is usually not what you want for a hard gate.
+    failureLimit: 0
 
     provider:
       prometheus:

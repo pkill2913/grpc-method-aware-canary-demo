@@ -10,6 +10,8 @@ spec:
     name: user-service
     port: 50051
   rules:
+  # GetUser: both backends present so the Argo Gateway API plugin can setWeight here.
+  # Initial canary weight is 0; Rollout setWeight drives canary / (100-canary).
   - matches:
     - method:
         service: usercard.UserService
@@ -17,10 +19,11 @@ spec:
     backendRefs:
     - name: user-service-stable
       port: 50051
-      weight: 90
+      weight: 100
     - name: user-service-canary
       port: 50051
-      weight: 10     
+      weight: 0
+  # CreateUser: stable only — the plugin leaves this rule untouched.
   - matches:
     - method:
         service: usercard.UserService
@@ -29,7 +32,7 @@ spec:
     - name: user-service-stable
       port: 50051
       weight: 100
-  # DEFAULT
+  # DEFAULT: stable only
   - backendRefs:
     - name: user-service-stable
       port: 50051

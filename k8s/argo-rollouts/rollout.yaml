@@ -27,15 +27,46 @@ spec:
     canary:
       stableService: user-service-stable
       canaryService: user-service-canary
+      # Gateway API traffic-router plugin updates GetUser weights on the GRPCRoute.
+      # CreateUser stays 100% stable because that rule only references user-service-stable
+      # (the plugin only mutates rules that contain BOTH stable and canary BackendRefs).
+      trafficRouting:
+        plugins:
+          argoproj-labs/gatewayAPI:
+            grpcRoute: userservice-route
+            namespace: app-demo
       steps:
-      - setWeight: 50      
+      # setWeight N => GetUser canary=N / stable=(100-N); CreateUser unchanged
+      - setWeight: 10
       - pause:
           duration: 5s
       - analysis:
           templates:
           - templateName: grpc-load-generator
+          args:
+          - name: distribution
+            value: "GetUser=v1:90,v2:10;CreateUser=v1:100"
+
+      - setWeight: 25
       - pause:
           duration: 5s
+      - analysis:
+          templates:
+          - templateName: grpc-load-generator
+          args:
+          - name: distribution
+            value: "GetUser=v1:75,v2:25;CreateUser=v1:100"
+
+      - setWeight: 50
+      - pause:
+          duration: 5s
+      - analysis:
+          templates:
+          - templateName: grpc-load-generator
+          args:
+          - name: distribution
+            value: "GetUser=v1:50,v2:50;CreateUser=v1:100"
+
       - analysis:
           templates:
           - templateName: user-service-success-rate
@@ -43,4 +74,6 @@ spec:
           - name: canary-hash
             valueFrom:
               podTemplateHashValue: Latest
-      - pause: {} 
+
+      # Manual gate before promotion
+      - pause: {}

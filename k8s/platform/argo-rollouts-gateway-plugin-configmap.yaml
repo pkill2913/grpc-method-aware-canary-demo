@@ -1,0 +1,22 @@
+# Applied to the argo-rollouts namespace (not app-demo).
+# Installs the Gateway API traffic-router plugin used by strategy.canary.trafficRouting.
+#
+# After apply: kubectl rollout restart deploy/argo-rollouts -n argo-rollouts
+# Verify logs contain: Downloading plugin argoproj-labs/gatewayAPI ... Download complete
+#
+# Pick the binary that matches the node architecture of the Rollouts controller pod
+# (linux-amd64 or linux-arm64). Update the version/URL from:
+# https://github.com/argoproj-labs/rollouts-plugin-trafficrouter-gatewayapi/releases
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argo-rollouts-config
+  namespace: argo-rollouts
+  labels:
+    app.kubernetes.io/component: rollouts-controller
+    app.kubernetes.io/name: argo-rollouts
+    app.kubernetes.io/part-of: argo-rollouts
+data:
+  trafficRouterPlugins: |-
+    - name: "argoproj-labs/gatewayAPI"
+      location: "https://github.com/argoproj-labs/rollouts-plugin-trafficrouter-gatewayapi/releases/download/v0.17.0/gatewayapi-plugin-linux-arm64"

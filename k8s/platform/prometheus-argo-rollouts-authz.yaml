@@ -1,0 +1,22 @@
+# Linkerd Viz Prometheus Server prometheus-admin uses accessPolicy: deny and only
+# allows the metrics-api ServiceAccount by default. Argo Rollouts Prometheus analysis
+# therefore gets HTTP 403 unless authorized.
+#
+# Requirements for this AuthorizationPolicy to work:
+# 1. The argo-rollouts controller pod must be meshed (linkerd.io/inject: enabled on the
+#    Deployment pod template) so requests present the argo-rollouts ServiceAccount identity.
+# 2. Apply this policy in linkerd-viz.
+apiVersion: policy.linkerd.io/v1alpha1
+kind: AuthorizationPolicy
+metadata:
+  name: prometheus-argo-rollouts
+  namespace: linkerd-viz
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: prometheus-admin
+  requiredAuthenticationRefs:
+  - kind: ServiceAccount
+    name: argo-rollouts
+    namespace: argo-rollouts

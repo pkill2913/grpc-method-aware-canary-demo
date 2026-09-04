@@ -4,6 +4,10 @@ metadata:
   name: grpc-load-generator
   namespace: app-demo
 spec:
+  args:
+  - name: distribution
+    # Override per Rollout step so expected GetUser mix matches the current setWeight.
+    value: "GetUser=v1:90,v2:10;CreateUser=v1:100"
   metrics:
   - name: generate-traffic
     count: 1
@@ -22,7 +26,7 @@ spec:
                 image: localhost/user-api-load-test:latest
                 imagePullPolicy: IfNotPresent
                 env:
-                - name: API_BASE_URL  
+                - name: API_BASE_URL
                   value: "http://user-api.app-demo.svc.cluster.local:8080"
                 - name: REQUESTS
                   value: "100"
@@ -33,6 +37,6 @@ spec:
                 - name: QUIET
                   value: "true"
                 - name: DISTRIBUTION
-                  value: "GetUser=v1:90,v2:10;CreateUser=v1:100"
+                  value: "{{args.distribution}}"
                 - name: MARGIN
                   value: "5"
